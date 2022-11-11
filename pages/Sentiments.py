@@ -7,6 +7,7 @@ import re
 from PIL import Image
 import seaborn as sns
 from datetime import datetime, date
+import yfinance as yf
 
 st.sidebar.markdown("EMO Elon")
 st.title("Is Elon Sentimental?")
@@ -60,6 +61,27 @@ if genre == 'Sentiment on performance':
         lrr.columns = ['Avg Likes', 'Avg Retweets', 'Avg Replies']
         st.bar_chart(lrr)
 
+    with st.expander("Check out TESLA and Twitter stocks and Sentiment correlation"):
+        happy_date = elon_use.loc[elon_use['pos_neg_neu']=='positive'].groupby(by='Date').agg('count')[['like count']]
+        sad_date = elon_use.loc[elon_use['pos_neg_neu']=='negative'].groupby(by='Date').agg('count')[['like count']]
+        tickers = ['TSLA', 'PYPL', 'TWTR', 'DOGE-USD']
+        df = yf.Tickers(tickers).download(ticker=tickers, period='10y')['Close']
+        happy_date.columns = ['happy']
+        sad_date.columns = ['sad']
+        merged = pd.concat([happy_date, sad_date], axis=1)
+        merged = pd.concat([merged, df], axis=1)
+        merged.fillna(method='ffill')
+        merged.fillna(method='bfill')
+
+        merged.reset_index(inplace=True)
+        merged['happy'] = merged['happy'] * 10
+        merged['sad'] = merged['sad'] * 10
+        merged = merged.loc[(merged['Date'] > start_date) & (merged['Date'] < end_date)]
+
+        fig, ax = plt.subplots()
+        sns.heatmap(merged.corr(), vmin=-1, vmax=1, ax=ax)
+        st.write(fig)
+        st.line_chart(merged, x='Date', y=['happy', 'sad', 'DOGE-USD', 'PYPL', 'TSLA', 'TWTR'])
 
 elif genre == 'Tweets on Elon':
     elon_use = elon_use.sort_values(by='Datetime')
