@@ -1,0 +1,121 @@
+# %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS
+import re
+from PIL import Image
+import seaborn as sns
+
+# %%
+elon1 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment).csv')
+
+# %%
+elon1.head()
+
+# %%
+elon2 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment) 10-28-22.csv')
+
+# %%
+elon2.head()
+
+# %%
+elon3 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment)_11-9-22.csv')
+
+# %%
+elon3.head()
+
+# %%
+elon = pd.concat([elon1, elon2, elon3], ignore_index=True)
+
+# %%
+elon.head()
+
+# %%
+elon.sort_values('Datetime', ascending=False)
+
+# %%
+# del elon['Unnamed: 0']
+# del elon['Unnamed: 0.1']
+# del elon['Unnamed: 0.2']
+# del elon['verified']
+
+# %%
+elon
+
+# %%
+elon.loc[elon['Tweet Id'] == 142179928203460608].iloc[0]['Text']
+
+# %%
+elon.drop_duplicates(subset='Tweet Id', inplace=True)
+
+# %%
+elon.loc[elon['Tweet Id'] == 142179928203460608]
+
+# %%
+text = " ".join(t for t in elon.Text)
+text = re.sub(r'http\S+', '', text)
+text = re.sub(r'amp\S+', '', text)
+text = re.sub(r'@\S+', '', text)
+
+# %%
+stopwords = set(STOPWORDS)
+word_cloud = WordCloud(collocations = False, stopwords=stopwords, background_color = 'white').generate(text)
+
+
+# %%
+plt.imshow(word_cloud, interpolation='bilinear')
+plt.axis("off")
+plt.show()
+
+# %%
+mask = np.array(Image.open("./text_bubble.png"))
+wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000, mask=mask).generate(text)
+# create twitter image
+plt.figure()
+plt.imshow(wordcloud, interpolation="bilinear")
+plt.axis("off")
+# store to file
+# plt.savefig("wordcloud.png", format="png")
+plt.show()
+
+# %%
+mask = np.array(Image.open("./twitter_logo.png"))
+mentions = WordCloud(stopwords=stopwords, background_color="white", max_words=1000, mask=mask).generate(" ".join(elon['mentions']))
+# create twitter image
+plt.figure()
+plt.imshow(mentions, interpolation="bilinear")
+plt.axis("off")
+# store to file
+# plt.savefig("wordcloud.png", format="png")
+plt.show()
+
+# %%
+elon['pos_neg_neu'] = elon[['sentiment']].applymap(lambda str: str.split(",")[0])
+
+# %%
+elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("'", ""))
+elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("[", ""))
+
+# %%
+elon.head()
+
+# %%
+elon[['pos_neg_neu']].value_counts()
+
+# %%
+sentiment = elon.pivot_table(index='pos_neg_neu', aggfunc='count')[['sentiment']]
+sentiment.reset_index(inplace=True)
+sentiment
+
+# %%
+colors = ["#14171A", "#657786", "#1DA1F2"]
+sns.set_palette(sns.color_palette(colors))
+sns.barplot(sentiment, y='sentiment', x='pos_neg_neu')
+plt.xlabel("Sentiment")
+plt.ylabel("Count");
+
+# %%
+
+
+
