@@ -32,10 +32,10 @@ def load_data():
     elon['pos_neg_neu'] = elon[['sentiment']].applymap(lambda str: str.split(",")[0])
     elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("'", ""))
     elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("[", ""))
-    elon_use = elon
-    return elon_use
+    return elon
 
-elon_use = load_data()
+elon = load_data()
+elon_use = elon
 
 # Description
 st.sidebar.markdown("In this page we calculate the effect of Elon's sentiment on tweets' performance and the effect of the tweets on his sentiment")
@@ -96,8 +96,8 @@ elif genre == 'Tweets on Elon':
 
     st.subheader("Here we see the cummulative pos/neg absolute trend of Elon")
 
-    acculist = np.zeros(len(elon))
-    for i in range(1, len(elon)):
+    acculist = np.zeros(len(elon_use))
+    for i in range(1, len(elon_use)):
         if elon_use.iloc[i-1]['pos_neg_neu'] == 'negative':
             acculist[i] = acculist[i-1] - 1
         if elon_use.iloc[i-1]['pos_neg_neu'] == 'positive':
@@ -113,23 +113,23 @@ elif genre == 'Tweets on Elon':
     pos_list = elon_use.loc[elon_use['pos_neg_neu'] == 'positive'].index.tolist()
     neu_list = elon_use.loc[elon_use['pos_neg_neu'] == 'neutral'].index.tolist()
 
-    pos_after_neg = [1 if (elon.iloc[i+1]['pos_neg_neu']=='positive') else 0 for i in neg_list[:-1]]    
-    neg_after_neg = [1 if (elon.iloc[i+1]['pos_neg_neu']=='negative') else 0 for i in neg_list[:-1]]
-    neu_after_neg = [1 if (elon.iloc[i+1]['pos_neg_neu']=='neutral') else 0 for i in neg_list[:-1]]
+    pos_after_neg = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='positive') else 0 for i in neg_list[:-1]]    
+    neg_after_neg = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='negative') else 0 for i in neg_list[:-1]]
+    neu_after_neg = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='neutral') else 0 for i in neg_list[:-1]]
     pos_rate_after_neg = sum(pos_after_neg)/len(neg_list[:-1])
     neg_rate_after_neg = sum(neg_after_neg)/len(neg_list[:-1])
     neu_rate_after_neg = sum(neu_after_neg)/len(neg_list[:-1])
 
-    pos_after_pos = [1 if (elon.iloc[i+1]['pos_neg_neu']=='positive') else 0 for i in pos_list[:-1]]    
-    neg_after_pos = [1 if (elon.iloc[i+1]['pos_neg_neu']=='negative') else 0 for i in pos_list[:-1]]
-    neu_after_pos = [1 if (elon.iloc[i+1]['pos_neg_neu']=='neutral') else 0 for i in pos_list[:-1]]
+    pos_after_pos = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='positive') else 0 for i in pos_list[:-1]]    
+    neg_after_pos = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='negative') else 0 for i in pos_list[:-1]]
+    neu_after_pos = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='neutral') else 0 for i in pos_list[:-1]]
     pos_rate_after_pos = sum(pos_after_pos)/len(pos_list[:-1])
     neg_rate_after_pos = sum(neg_after_pos)/len(pos_list[:-1])
     neu_rate_after_pos = sum(neu_after_pos)/len(pos_list[:-1])
 
-    pos_after_neu = [1 if (elon.iloc[i+1]['pos_neg_neu']=='positive') else 0 for i in neu_list[:-1]]    
-    neg_after_neu = [1 if (elon.iloc[i+1]['pos_neg_neu']=='negative') else 0 for i in neu_list[:-1]]
-    neu_after_neu = [1 if (elon.iloc[i+1]['pos_neg_neu']=='neutral') else 0 for i in neu_list[:-1]]
+    pos_after_neu = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='positive') else 0 for i in neu_list[:-1]]    
+    neg_after_neu = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='negative') else 0 for i in neu_list[:-1]]
+    neu_after_neu = [1 if (elon_use.iloc[i+1]['pos_neg_neu']=='neutral') else 0 for i in neu_list[:-1]]
     pos_rate_after_neu = sum(pos_after_neu)/len(neu_list[:-1])
     neg_rate_after_neu = sum(neg_after_neu)/len(neu_list[:-1])
     neu_rate_after_neu = sum(neu_after_neu)/len(neu_list[:-1])
