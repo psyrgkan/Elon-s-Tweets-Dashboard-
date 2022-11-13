@@ -14,23 +14,28 @@ colors = ["#14171A", "#657786", "#1DA1F2"]
 sns.set_palette(sns.color_palette(colors))
 
 #Load Data
-elon1 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment).csv')
-elon2 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment) 10-28-22.csv')
-elon3 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment)_11-9-22.csv')
-elon = pd.concat([elon1, elon2, elon3], ignore_index=True)
-del elon['Unnamed: 0']
-del elon['Unnamed: 0.1']
-del elon['Unnamed: 0.2']
-del elon['verified']
-# st.write(elon.head())
-elon.drop_duplicates(subset='Tweet Id', inplace=True)
+@st.cache
+def load_data():
 
-elon['Date'] = elon[['Date']].applymap(lambda datestr: pd.to_datetime(datestr))
+    elon1 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment).csv')
+    elon2 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment) 10-28-22.csv')
+    elon3 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment)_11-9-22.csv')
+    elon = pd.concat([elon1, elon2, elon3], ignore_index=True)
+    del elon['Unnamed: 0']
+    del elon['Unnamed: 0.1']
+    del elon['Unnamed: 0.2']
+    del elon['verified']
+    # st.write(elon.head())
+    elon.drop_duplicates(subset='Tweet Id', inplace=True)
 
-elon['pos_neg_neu'] = elon[['sentiment']].applymap(lambda str: str.split(",")[0])
-elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("'", ""))
-elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("[", ""))
+    elon['Date'] = elon[['Date']].applymap(lambda datestr: pd.to_datetime(datestr))
 
+    elon['pos_neg_neu'] = elon[['sentiment']].applymap(lambda str: str.split(",")[0])
+    elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("'", ""))
+    elon[['pos_neg_neu']] = elon[['pos_neg_neu']].applymap(lambda str: str.replace("[", ""))
+    return elon
+
+elon = load_data()
 
 #Datetime Selector
 st.sidebar.header("Elon's Tweets")
