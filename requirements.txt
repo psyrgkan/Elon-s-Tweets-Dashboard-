@@ -1,9 +1,9 @@
+Pillow
 pandas
 numpy
 streamlit
 matplotlib
 wordcloud
-PIL
 seaborn
 datetime
 yfinance
