@@ -1,0 +1,10 @@
+pandas
+numpy
+streamlit
+matplotlib
+wordcloud
+re
+PIL
+seaborn
+datetime
+yfinance
