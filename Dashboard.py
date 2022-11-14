@@ -17,9 +17,9 @@ sns.set_palette(sns.color_palette(colors))
 @st.cache
 def load_data():
 
-    elon1 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment).csv')
-    elon2 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment) 10-28-22.csv')
-    elon3 = pd.read_csv(r'../data/elon/ElonTweets(Sentiment)_11-9-22.csv')
+    elon1 = pd.read_csv(r'./elon/ElonTweets(Sentiment).csv')
+    elon2 = pd.read_csv(r'./elon/ElonTweets(Sentiment) 10-28-22.csv')
+    elon3 = pd.read_csv(r'./elon/ElonTweets(Sentiment)_11-9-22.csv')
     elon = pd.concat([elon1, elon2, elon3], ignore_index=True)
     del elon['Unnamed: 0']
     del elon['Unnamed: 0.1']
