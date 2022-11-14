@@ -80,14 +80,14 @@ if genre == 'Sentiment on performance':
         merged.fillna(method='bfill')
 
         merged.reset_index(inplace=True)
-        merged['happy'] = merged['happy'] * 10
-        merged['sad'] = merged['sad'] * 10
+        merged['ratio'] = merged['happy']/merged['sad']
+        merged['ratio'] = merged['ratio'] * 100
         merged = merged.loc[(merged['Date'] > start_date) & (merged['Date'] < end_date)]
 
         fig, ax = plt.subplots()
         sns.heatmap(merged.corr(), vmin=-1, vmax=1, ax=ax)
         st.write(fig)
-        st.line_chart(merged, x='Date', y=['happy', 'sad', 'DOGE-USD', 'PYPL', 'TSLA', 'TWTR'])
+        st.line_chart(merged, x='Date', y=['ratio', 'DOGE-USD', 'PYPL', 'TSLA', 'TWTR'])
 
 elif genre == 'Tweets on Elon':
     elon_use = elon_use.sort_values(by='Datetime')
