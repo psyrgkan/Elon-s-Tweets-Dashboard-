@@ -76,12 +76,11 @@ if genre == 'Sentiment on performance':
         sad_date.columns = ['sad']
         merged = pd.concat([happy_date, sad_date], axis=1)
         merged = pd.concat([merged, df], axis=1)
-        merged.fillna(method='ffill')
-        merged.fillna(method='bfill')
+        merged.fillna(method='backfill')
 
         merged.reset_index(inplace=True)
         merged['ratio'] = merged['happy']/merged['sad']
-        merged['ratio'] = merged['ratio'] * 100
+        merged['ratio'] = merged['ratio'] * 10
         merged = merged.loc[(merged['Date'] > start_date) & (merged['Date'] < end_date)]
 
         fig, ax = plt.subplots()
